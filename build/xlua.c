@@ -96,7 +96,7 @@ LUA_API void xlua_pushuint (lua_State *L, uint32_t n) {
 }
 #endif
 
-#if LUA_VERSION_NUM ==503
+#if LUA_VERSION_NUM >= 503
 LUA_API int lua_setfenv(lua_State *L, int idx)
 {
     int type = lua_type(L, idx);
@@ -112,7 +112,7 @@ LUA_API int lua_setfenv(lua_State *L, int idx)
 }
 
 LUA_API uint32_t xlua_objlen (lua_State *L, int idx) {
-	return (uint32_t)lua_rawlen (L, idx);
+	return (uint32_t)luaL_len (L, idx);
 }
 
 LUA_API uint32_t xlua_touint (lua_State *L, int idx) {
@@ -547,6 +547,7 @@ LUA_API int cls_indexer(lua_State *L) {
 			lua_call(L, 0, 1);
 			return 1;
 		}
+		lua_pop(L, 1);
 	}
 	
 	if (!lua_isnil(L, lua_upvalueindex(2))) {
@@ -1234,7 +1235,7 @@ static const luaL_Reg xlualib[] = {
 LUA_API void luaopen_xlua(lua_State *L) {
 	luaL_openlibs(L);
 	
-#if LUA_VERSION_NUM == 503
+#if LUA_VERSION_NUM >= 503
 	luaL_newlib(L, xlualib);
 	lua_setglobal(L, "xlua");
 #else
